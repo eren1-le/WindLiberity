@@ -17,7 +17,7 @@ type Message struct {
 }
 
 // Newrequest
-func Newrequest(conn Connection, msg []byte) (*Request, error) {
+func NewRequest(conn Connection, msg []byte) (*Request, error) {
 	m := &Message{}
 	if err := json.Unmarshal(msg, m); err != nil {
 		return nil, err
