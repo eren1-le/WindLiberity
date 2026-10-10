@@ -2,8 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
-	"os/user"
+	"fmt"	
 
 	"github.com/binbinly/pkg/logger"
 	"github.com/pkg/errors"

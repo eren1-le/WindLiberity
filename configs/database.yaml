@@ -1,0 +1,11 @@
+#default:
+#  Driver: mysql
+#  Host: 127.0.0.1
+#  Port: 3306
+#  User: root
+#  Password: root
+#  Database: WindLiberity
+#  Debug: true
+#  MaxIdleConn: 10
+#  MaxOpenConn: 100
+#  ConnMaxLifeTime: 100s

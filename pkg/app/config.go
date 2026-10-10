@@ -1,3 +1,12 @@
+/*
+ * @Author: eren dengdengd1222@mail.com
+ * @Date: 2026-09-23 13:52:24
+ * @LastEditors: eren dengdengd1222@mail.com
+ * @LastEditTime: 2026-10-10 15:06:32
+ * @FilePath: /WindLiberity/pkg/app/config.go
+ * @Description:
+ *
+ */
 package app
 
 import (
@@ -12,7 +21,7 @@ var (
 
 func SetDefaultConf(v *viper.Viper) {
 	v.SetDefault("Env", "local")
-	v.SetDefault("Name", "gin-chat")
+	v.SetDefault("Name", "WindLiberity")
 	v.SetDefault("DfsUrl", "http://127.0.0.1:9050/group1/")
 	v.SetDefault("Mode", "debug")
 	v.SetDefault("JwtSecret", "TQ2MNWIB2zK0z9JCqUC6WcTG9pMTnX12CLuVSop5Xr2owx4M9JTJIzBnMMYeWwRs")
@@ -34,7 +43,7 @@ func SetDefaultConf(v *viper.Viper) {
 		WriteTimeout: 5 * time.Second,
 	})
 	v.BindEnv("name")
-	v.BindEnv("dfsUrl", "CHAT_DFS_URL")
+	v.BindEnv("dfsUrl", "WindLiberity_DFS_URL")
 	v.BindEnv("debug")
 	v.BindEnv("proxy")
 }

@@ -1,0 +1,86 @@
+package server
+
+import (
+	"WindLiberity/internal/router"
+	"WindLiberity/internal/server"
+	"WindLiberity/internal/service"
+	"WindLiberity/pkg/app"
+	"WindLiberity/pkg/config"
+
+	"github.com/binbinly/pkg/logger"
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+var (
+	cfgDir string
+	StartCmd = &cobra.Command{
+		Use: 		"server",
+		Short: 		"Start WindLiberity server",
+		Example: 	"WindLiberity server -c configs",
+		SilenceUsage: true,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			setup()
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			run()
+		},
+	}
+)
+
+func init() {
+	StartCmd.PersistentFlags().StringVarP(&cfgDir, "config", "c", "configs", "config path")
+}
+
+func setup() {
+	// init config
+	c := config.New(config.WithConfigDir(cfgDir), config.WithEnvPrefix("WindLiberity"))
+	if err := c.Load("app", app.Conf, func(v *viper.Viper) {
+		app.SetDefaultConf(v)
+	}); err != nil {
+		panic(err)
+	}
+	gin.SetMode(app.Conf.Mode)
+
+	// init Logger
+	logger.InitLogger(logger.WithLevel(app.Conf.LogLevel), logger.WithLogDir("./logs/"))
+}
+
+// run
+func run() {
+	// websocket server
+	ws := server.NewWsServer(&app.Conf.Websocket)
+	// http server
+	http := server.NewHttpServer(&app.Conf.HTTP)
+
+	// init router
+	r := router.NewRouter()
+
+	// set proxy to http://[host]/ws  -> ws://[host]
+	if app.Conf.Proxy {
+		r.Any("/ws", app.ProxyGinHandler("http://127.0.0.1"+app.Conf.Websocket.Addr))
+	}
+	// init logger level
+	if !app.Conf.Debug {
+		logger.InitLogger(logger.WithLevel(logger.InfoLevel))
+	}
+
+	http.Handler = r
+
+	// init service
+	service.Svc = service.New(ws,
+		service.WithJwtTimeout(app.Conf.JwtTimeout),
+		service.WithJwtSecret(app.Conf.JwtSecret))
+
+	// init app
+	apps := app.New(
+		app.WithName(app.Conf.Name),
+		app.WithServer(http,ws),
+	)
+
+	// run app
+	if err := apps.Run(); err != nil {
+		panic(err)
+	}
+}

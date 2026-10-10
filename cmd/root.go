@@ -2,21 +2,23 @@
  * @Author: eren dengdengd1222@mail.com
  * @Date: 2026-09-26 17:05:18
  * @LastEditors: eren dengdengd1222@mail.com
- * @LastEditTime: 2026-09-28 15:32:15
+ * @LastEditTime: 2026-10-10 11:13:20
  * @FilePath: /WindLiberity/cmd/root.go
- * @Description: 
- * 
+ * @Description:
+ *
  */
 package cmd
 
 import (
+	"WindLiberity/cmd/migrate"
+	"WindLiberity/cmd/server"
+	"WindLiberity/cmd/version"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-
 )
 
 var rootCmd = &cobra.Command{
@@ -46,5 +48,7 @@ func Execute() {
 }
 
 func init() {
-	
+	rootCmd.AddCommand(server.StartCmd)
+	rootCmd.AddCommand(migrate.StartCmd)
+	rootCmd.AddCommand(version.StartCmd)
 }
