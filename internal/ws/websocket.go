@@ -1,4 +1,4 @@
-package websocket
+package ws
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 	"WindLiberity/transport/websocket"
 
 	"github.com/binbinly/pkg/logger"
-	"github.com/binbinly/pkg/transport/ws"
 	"github.com/pkg/errors"
 	"github.com/redis/go-redis/v9"
 )
@@ -48,7 +47,7 @@ func (w *Server) send(ctx context.Context, c *UserConnInfo,  msg []byte) error {
 		return nil
 	}
 	conn, err := w.ws.GetManager(c.ConnID).Get(c.ConnID)
-	if errors.Is(err, ws.ErrConnNotFound) {
+	if errors.Is(err, websocket.ErrConnNotFound) {
 		w.SaveHistory(ctx, c, msg)
 		return nil
 	} else if err != nil {
@@ -64,7 +63,7 @@ func (w *Server) send(ctx context.Context, c *UserConnInfo,  msg []byte) error {
 // BatchSendConn
 func (w *Server) BatchSendConn(ctx context.Context, cs []*UserConnInfo, event string, data any) (err error) {
 	msg := Pack(event, data)
-	for _, c := range cs {
+	for _, c := range cs {	
 		if err = w.send(ctx, c, msg); err != nil {
 			logger.Warnf("[ws.batchSend] err: %v", c.UserID, err)
 		}
@@ -78,7 +77,7 @@ func (w *Server) BatchSendMessage(ctx context.Context, c *UserConnInfo, list []s
 		return nil
 	}
 	conn, err := w.ws.GetManager(c.ConnID).Get(c.ConnID)
-	if errors.Is(err, ws.ErrConnNotFound) {
+	if errors.Is(err, websocket.ErrConnNotFound) {
 		return nil
 	} else if err != nil {
 		return errors.Wrapf(err, "[ws.Close] get conn by uid: %v", c.UserID)
@@ -94,7 +93,7 @@ func (w *Server) BatchSendMessage(ctx context.Context, c *UserConnInfo, list []s
 // Close 
 func (w *Server) Close(ctx context.Context, c *UserConnInfo, data any) error {
 	conn, err := w.ws.GetManager(c.ConnID).Get(c.ConnID)
-	if errors.Is(err, ws.ErrConnNotFound) {
+	if errors.Is(err, websocket.ErrConnNotFound) {
 		return nil
 	} else if err != nil {
 		return errors.Wrapf(err, "[ws.Close] get conn by uid: %v", c.UserID)

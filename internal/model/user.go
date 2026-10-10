@@ -7,11 +7,10 @@ import (
 
 const (
 	//UserStateNormal 状态 - 正常
-	UserStateNormal = iota + 1
+	UserStatusNormal = iota + 1
 	//UserStateDiable 状态 - 禁用
 	UserStateDiable
 )
-
 
 // UserModel 用户模型
 type UserModel struct {
@@ -26,7 +25,6 @@ type UserModel struct {
 	Status   int8   `gorm:"column:status;not null;default:1;comment:状态" json:"status"`
 	CUT
 }
-
 
 // TableName 表名
 func (u *UserModel) TableName() string {
@@ -43,11 +41,10 @@ func (u *UserModel) BeforeSave(tx *gorm.DB) (err error) {
 	u.Password, err = auth.Encrypt(u.Password)
 	return err
 }
+
 // Basic information
 type User struct {
-	ID		int		`json:"id"`
-	Name	string	`json:"name"`
-	Avatar	string 	`json:"avatar"`
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
 }
-
-
