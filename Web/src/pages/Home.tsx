@@ -8,18 +8,12 @@
  * 
  */
 import { Carousel } from "antd";
-import React from "react";
 import Reze from "../assets/Reze.jpeg"
 const banners = [
   { src: Reze, alt: "banner-1" },
   { src: Reze, alt: "banner-2" },
   { src: Reze, alt: "banner-3" },
   { src: Reze, alt: "banner-4" },
-]
-
-const animeList_weekly = 
-[
-    { title: ""}
 ]
 
 const Home = () => (

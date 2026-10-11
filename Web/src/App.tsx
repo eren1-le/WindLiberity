@@ -8,24 +8,36 @@
  * 
  */
 import { Layout } from "antd"
+import { Routes, Route } from "react-router-dom"
 import NavBar from "./components/NavBar"
 import Home from "./pages/Home"
+import Login from "./pages/Login"
+import Register from "./pages/Register"
 import WeekSchedules from "./components/WeekSchedules";
-// 根组件：目前只渲染首页
 
 const { Content } = Layout;
+
 function App() {
   return (
     <Layout>
       <NavBar />
       <Content>
-        <Home />
-      </Content>
-      <Content>
-        <WeekSchedules />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Home />
+                <WeekSchedules />
+              </>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
       </Content>
     </Layout>
-)
+  )
 }
 
 export default App

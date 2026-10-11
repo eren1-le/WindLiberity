@@ -7,13 +7,13 @@
  * @Description: 
  * 
  */
-import React from "react";
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Dropdown, Avatar, Button, Space } from 'antd';
 import type { MenuProps } from "antd";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { useState } from 'react';
-import { HomeOutlined, DollarOutlined, EuroCircleFilled } from "@ant-design/icons";
+import { useEffect, useState } from 'react';
+import { HomeOutlined, DollarOutlined, LoginOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { useAuth } from '../context/auth-context';
 const { Header } = Layout;
 
 const StyleHeader = styled(Header) `
@@ -63,38 +63,74 @@ const  MainMenu = styled(StyledMenu)`
 
 const NavBar = () => {
     type MenuItem = Required<MenuProps>['items'][number];
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const items: MenuItem[] = [
-    {
-        label: '首页',
-        key: 'home',
-        icon: <HomeOutlined />,
-    },
-    {
-        label: '番剧',
-        key: 'anime',
-        icon: <DollarOutlined />,
-    }, 
-    {
-        label: '登陆/注册',
-        key: 'login/register',
-        icon: <EuroCircleFilled />,
-    },
-];
-    const [current, setCurrent] = useState('home');     
+        {
+            label: <Link to="/">首页</Link>,
+            key: 'home',
+            icon: <HomeOutlined />,
+        },
+        {
+            label: <Link to="/">番剧</Link>,
+            key: 'anime',
+            icon: <DollarOutlined />,
+        },
+    ];
+
+    const userMenuItems: MenuProps['items'] = [
+        {
+            key: 'logout',
+            label: '退出登录',
+            icon: <LogoutOutlined />,
+        },
+    ];
+
+    const [current, setCurrent] = useState('home');
+
+    useEffect(() => {
+        if (location.pathname.startsWith('/login') || location.pathname.startsWith('/register')) {
+            setCurrent('login');
+        } else {
+            setCurrent('home');
+        }
+    }, [location.pathname]);
+
     const onClick: MenuProps['onClick'] = (e) => {
-        console.log('click', e);
         setCurrent(e.key);
+    };
+
+    const onUserMenuClick: MenuProps['onClick'] = ({ key }) => {
+        if (key === 'logout') {
+            logout();
+            navigate('/');
+        }
     };
 
     return (
         <StyleHeader>
             <Logo>WindLiberity</Logo>
             <MainMenu mode='horizontal'
-            items={items} 
-            onClick={onClick}>
-            selectedKeys={[current]}
-            </MainMenu>
+                items={items}
+                onClick={onClick}
+                selectedKeys={[current]}
+            />
+            {user ? (
+                <Dropdown menu={{ items: userMenuItems, onClick: onUserMenuClick }}>
+                    <Space style={{ cursor: 'pointer', color: '#e5e7eb' }}>
+                        <Avatar size="small" icon={<UserOutlined />} style={{ background: '#fb7299' }} />
+                        <span>{user.nickname || user.username}</span>
+                    </Space>
+                </Dropdown>
+            ) : (
+                <Link to="/login">
+                    <Button type="primary" icon={<LoginOutlined />}>
+                        登录 / 注册
+                    </Button>
+                </Link>
+            )}
         </StyleHeader>
     );
 }; 
