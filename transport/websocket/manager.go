@@ -53,6 +53,8 @@ func (m *Manager) Len() int {
 
 // Clear
 func (m *Manager) Clear() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	for _, conn := range m.connections {
 		conn.Stop()
 	}

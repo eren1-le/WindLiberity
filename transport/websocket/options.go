@@ -34,7 +34,10 @@ type Options struct {
 	WriteBufferSize  int           //发送缓冲区
 	WriteWait        time.Duration //写入客户端超时
 
-
+	Router      *Engine               //请求路由
+	OnConnStart func(conn Connection) //该Server的连接创建开始时Hook函数
+	OnConnStop  func(conn Connection) //该Server的连接断开时的Hook函数
+	OnConnAuth  AuthHandler           //该Server的连接鉴权完成的Hook函数
 }
 
 func WithID(id string) Option {
@@ -55,7 +58,11 @@ func WithAddr(addr string) Option {
 	}
 }
 
-
+func WithRouter(r *Engine) Option {
+	return func(o *Options) {
+		o.Router = r
+	}
+}
 func WithMaxPacketSize(size int) Option {
 	return func(o *Options) {
 		o.MaxPacketSize = size
@@ -107,5 +114,23 @@ func WithWriteBufferSize(size int) Option {
 func WithWriteWait(d time.Duration) Option {
 	return func(o *Options) {
 		o.WriteWait = d
+	}
+}
+
+func WithOnConnStart(f func(conn Connection)) Option {
+	return func(o *Options) {
+		o.OnConnStart = f
+	}
+}
+
+func WithOnConnStop(f func(conn Connection)) Option {
+	return func(o *Options) {
+		o.OnConnStop = f
+	}
+}
+
+func WithOnConnAuth(f AuthHandler) Option {
+	return func(o *Options) {
+		o.OnConnAuth = f
 	}
 }

@@ -2,7 +2,7 @@
  * @Author: eren dengdengd1222@mail.com
  * @Date: 2026-09-23 11:15:37
  * @LastEditors: eren dengdengd1222@mail.com
- * @LastEditTime: 2026-09-23 13:49:12
+ * @LastEditTime: 2026-10-10 15:42:33
  * @FilePath: /WindLiberity/pkg/app/redis.go
  * @Description: e
  * 
@@ -50,14 +50,14 @@ func loadRedisConf(cfg *RedisConfig) error {
 			"MinIdleConn":  200,
 			"DialTimeout":  60 * time.Second,
 			"ReadTimeout":  500 * time.Millisecond,
-			"WriteTimeout": 500 * time.Millisecond,
 			"PoolSize":     100,
+			"WriteTimeout": 500 * time.Millisecond,
 			"PoolTimeout":  240 * time.Second,
 		})
 		v.BindEnv("default.url", "ANIME_REDIS_URL")
 		v.BindEnv("default.addr", "ANIME_REDIS_ADDR")
-		v.BindEnv("default.password", "ANIME_REDIS_PASSWORD")
 		v.BindEnv("default.DB", "ANIME_REDIS_DB")
+		v.BindEnv("default.password", "ANIME_REDIS_PASSWORD")
 	}); err != nil {
 		return err
 	}

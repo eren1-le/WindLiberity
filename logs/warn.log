@@ -1,0 +1,1 @@
+{"level":"warn","ts":1791632272.0605364,"caller":"api/api.go:106","msg":"[api] err:[service.user] user exist: [repo.user] username testuser or phone 13333333333 does not exist: Error 1146 (42S02): Table 'WindLiberity.user' doesn't exist"}

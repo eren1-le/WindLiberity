@@ -146,3 +146,78 @@ func (c *wsConnection) startReader() {
 		}
 	}
 }
+// Start
+func (c *wsConnection) Start() {
+	c.ctx, c.cancel = context.WithCancel(context.Background())
+
+	if c.server.Options().OnConnStart != nil {
+		c.server.Options().OnConnStart(c)
+	}
+	go c.startReader()
+	go c.startWriter()
+}
+
+//Stop
+func (c *wsConnection) Stop() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if c.isClosed == true {
+		return
+	}
+
+	// it will be called if user register shutdown task of this connection
+	if c.server.Options().OnConnStop != nil {
+		c.server.Options().OnConnStop(c)
+	}
+
+	//shutdown socket connection
+	if err := c.conn.Close(); err != nil {
+		logger.Warnf("[ws.stop] connection closed err:%v", err)
+	}
+
+	c.cancel()
+	c.server.GetManager(c.id).Remove(c)
+	close(c.msgChan)
+	c.isClosed = true
+}
+func (c *wsConnection) Context() context.Context {
+	return c.ctx
+}
+
+// GetID
+func (c *wsConnection) GetID() uint64 {
+	return c.id
+}
+// GetUID
+func (c *wsConnection) GetUID() int {
+	return c.uid
+}
+
+// RemoteAddr
+func (c *wsConnection) RemoteAddr() net.Addr {
+	return c.conn.RemoteAddr()
+}
+
+// Send
+func (c *wsConnection) Send(ctx context.Context, mid int, msg []byte) error {
+	if c.isClosed == true {
+		return ErrConnNotFinish
+	}
+
+	// Write
+	if err := c.conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+		return err
+	}
+	return nil
+}
+
+// AsyncSend
+func (c *wsConnection) AsyncSend(ctx context.Context, mid int, msg []byte) error {
+	if c.isClosed == true {
+		return ErrConnNotFinish
+	}
+
+	c.msgChan <- msg
+	return nil
+}

@@ -2,7 +2,7 @@
  * @Author: eren dengdengd1222@mail.com
  * @Date: 2026-09-23 14:02:36
  * @LastEditors: eren dengdengd1222@mail.com
- * @LastEditTime: 2026-09-24 10:50:01
+ * @LastEditTime: 2026-10-09 15:25:29
  * @FilePath: /WindLiberity/pkg/app/app.go
  * @Description:
  *
@@ -22,9 +22,9 @@ import (
 )
 
 type App struct {
-	opts 	options
-	ctx 	context.Context
-	cancel  func()
+	opts   options
+	ctx    context.Context
+	cancel func()
 }
 
 // New create app globally
@@ -36,8 +36,8 @@ func New(opts ...Option) *App {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	return &App{
-		opts: 	o,
-		ctx: 	ctx,
+		opts:   o,
+		ctx:    ctx,
 		cancel: cancel,
 	}
 }
@@ -65,11 +65,11 @@ func (a *App) Run() error {
 			case <-ctx.Done():
 				return ctx.Err()
 			case s := <-quit:
-					log.Printf("Server receive a quit singal: %s", s.String())
-					if err := a.Stop(); err != nil {
-						log.Print("failed to stop app, err: %v", err)
-						return err;
-					}
+				log.Printf("Server receive a quit singal: %s", s.String())
+				if err := a.Stop(); err != nil {
+					log.Print("failed to stop app, err: %v", err)
+					return err
+				}
 			}
 		}
 	})
@@ -80,8 +80,7 @@ func (a *App) Run() error {
 	return nil
 }
 
-
-//	Stop  stops the application gracefully
+// Stop  stops the application gracefully
 func (a *App) Stop() error {
 	if a.cancel != nil {
 		a.cancel()
